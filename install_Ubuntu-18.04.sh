@@ -5,7 +5,8 @@ set -e
 LIBFREENECT2_RELEASE=0.2.0
 GRASS_RELEASE=7.8.0
 PCL_RELEASE=1.8.0
-NCORES=`nproc --all`
+TANGIBLE_RELEASE=1.0.0
+NCORES=2
 CDIR=`pwd`
 
 # package dependencies
@@ -105,8 +106,9 @@ cd ..
 # could use g.extension instead:
 # g.extension g.gui.tangible url=github.com/tangible-landscape/grass-tangible-landscape
 # this is for the development of grass-tangible-landscape
-git clone https://github.com/tangible-landscape/grass-tangible-landscape.git
-cd grass-tangible-landscape
+wget https://github.com/tangible-landscape/grass-tangible-landscape/archive/v${TANGIBLE_RELEASE}.tar.gz
+tar xvf v${TANGIBLE_RELEASE}.tar.gz
+cd grass-tangible-landscape-${TANGIBLE_RELEASE}
 make MODULE_TOPDIR=../grass-${GRASS_RELEASE}
 make install MODULE_TOPDIR=../grass-${GRASS_RELEASE}
 cd ..
@@ -124,3 +126,18 @@ Type=Application
 Categories=GIS;Application;
 EOF
 sudo mv /tmp/grass.desktop /usr/share/applications/grass.desktop
+
+# set up kinect Protonect app in dash
+cat << EOF > /tmp/kinect.desktop
+[Desktop Entry]
+Version=1.0
+Name=Kinect Protonect
+Comment=Start Kinect
+Exec=${CDIR}/libfreenect2-${LIBFREENECT2_RELEASE}/build/bin/Protonect
+Icon=
+Terminal=true
+Type=Application
+Categories=GIS;Application;
+EOF
+sudo mv /tmp/kinect.desktop /usr/share/applications/kinect.desktop
+

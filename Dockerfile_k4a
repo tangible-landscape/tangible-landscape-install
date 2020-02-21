@@ -1,0 +1,134 @@
+FROM ubuntu:18.04
+
+ENV DEBIAN_FRONTEND noninteractive
+
+SHELL ["/bin/bash", "-c"]
+
+ENV GRASS_RELEASE=7.8.2
+ENV NUMTHREADS=4
+
+WORKDIR /src
+
+RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y --no-install-recommends --no-install-suggests \
+    build-essential \
+    bison \
+    bzip2 \
+    cmake \
+    curl \
+    flex \
+    g++ \
+    gcc \
+    gdal-bin \
+    git \
+    language-pack-en-base \
+    libbz2-dev \
+    libcairo2 \
+    libcairo2-dev \
+    libcurl4-gnutls-dev \
+    libfftw3-bin \
+    libfftw3-dev \
+    libfreetype6-dev \
+    libgdal-dev \
+    libgeos-dev \
+    libgsl0-dev \
+    libjpeg-dev \
+    libjsoncpp-dev \
+    libnetcdf-dev \
+    libncurses5-dev \
+    libopenblas-base \
+    libopenblas-dev \
+    libopenjp2-7 \
+    libopenjp2-7-dev \
+    libpnglite-dev \
+    libpq-dev \
+    libpython3-all-dev \
+    libsqlite3-dev \
+    libtiff-dev \
+    libzstd-dev \
+    locales \
+    make \
+    mesa-common-dev \
+    moreutils \
+    ncurses-bin \
+    netcdf-bin \
+    python3 \
+    python3-dateutil \
+    python3-dev \
+    python3-magic \
+    python3-numpy \
+    python3-pil \
+    python3-pip \
+    python3-ply \
+    python3-setuptools \
+    python3-venv \
+    software-properties-common \
+    sqlite3 \
+    subversion \
+    unzip \
+    vim \
+    wget \
+    zip \
+    zlib1g-dev \
+    mesa-common-dev libglu1-mesa-dev \
+    libpdal-dev
+
+# download wxPython4 binary
+RUN pip3 install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-18.04 wxPython
+
+# Configure compile and install GRASS GIS
+RUN git clone --depth=1 --branch $GRASS_RELEASE https://github.com/OSGeo/grass.git
+ENV GRASS_PYTHON=/usr/bin/python3
+WORKDIR /src/grass
+RUN /src/grass/configure \
+  --with-cxx \
+  --enable-largefile \
+  --with-proj --with-proj-share=/usr/share/proj \
+  --with-gdal=/usr/bin/gdal-config \
+  --with-geos \
+  --with-sqlite \
+  --with-cairo --with-cairo-ldflags=-lfontconfig \
+  --with-freetype --with-freetype-includes="/usr/include/freetype2/" \
+  --with-fftw \
+  --with-postgres=yes --with-postgres-includes="/usr/include/postgresql" \
+  --with-netcdf \
+  --with-zstd \
+  --with-bzlib \
+  --with-pdal \
+  --without-mysql \
+  --without-odbc \
+  --with-openmp \
+  --without-ffmpeg \
+  --with-opengl-libs=/usr/include/GL \
+    && make -j $NUMTHREADS \
+    && make install
+    
+
+
+# PCL
+ENV PCL_RELEASE=1.10.0
+WORKDIR /src
+RUN git clone --depth=1 --branch pcl-$PCL_RELEASE https://github.com/PointCloudLibrary/pcl.git
+RUN apt-get install -y --no-install-recommends --no-install-suggests libeigen3-dev libflann-dev
+WORKDIR /src/pcl
+RUN mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && \
+    make -j$NUMTHREADS && \
+    make -j2 install
+
+# K4A
+RUN apt install -y --no-install-recommends --no-install-suggests gpg-agent debconf-utils
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN apt-add-repository https://packages.microsoft.com/ubuntu/18.04/prod
+RUN apt-get update && echo "libk4a1.3	libk4a1.3/accepted-eula-hash	string	0f5d5c5de396e4fee4c0753a21fee0c1ed726cf0316204edda484f08cb266d76" | debconf-set-selections && \
+        echo "libk4a1.3 libk4a1.3/accept-eula boolean	true" | debconf-set-selections && \
+        apt-get install -y libk4a1.3 libk4a1.3-dev k4a-tools
+# wget https://raw.githubusercontent.com/microsoft/Azure-Kinect-Sensor-SDK/develop/scripts/99-k4a.rules -O /etc/udev/rules.d/99-k4a.rules
+
+        
+# r.in.kinect
+WORKDIR /src
+RUN git clone --single-branch --branch pcl-k4a https://github.com/tangible-landscape/r.in.kinect.git
+WORKDIR /src/r.in.kinect
+RUN make MODULE_TOPDIR=../grass && make install MODULE_TOPDIR=../grass
+
+

@@ -6,6 +6,7 @@ LIBFREENECT2_RELEASE=0.2.0
 GRASS_RELEASE=7.8.0
 PCL_RELEASE=1.8.0
 TANGIBLE_RELEASE=1.0.0
+RINKINECT_RELEASE=1.0.0
 NCORES=2
 CDIR=`pwd`
 
@@ -96,7 +97,7 @@ sudo make install
 cd ..
 
 # r.in.kinect
-git clone https://github.com/tangible-landscape/r.in.kinect.git
+git clone --branch v${RINKINECT_RELEASE} --single-branch https://github.com/tangible-landscape/r.in.kinect
 cd r.in.kinect
 make MODULE_TOPDIR=../grass-${GRASS_RELEASE}
 make install MODULE_TOPDIR=../grass-${GRASS_RELEASE}

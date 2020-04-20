@@ -128,7 +128,7 @@ mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && \
 cd ../..
 
 # r.in.kinect
-git clone --single-branch --branch pcl-k4a https://github.com/tangible-landscape/r.in.kinect.git r.in.kinect.k4a
+git clone --single-branch --branch k4a https://github.com/tangible-landscape/r.in.kinect.git r.in.kinect.k4a
 cd r.in.kinect.k4a
 make MODULE_TOPDIR=../grass-${GRASS_RELEASE} && sudo make install MODULE_TOPDIR=../grass-${GRASS_RELEASE}
 cd ..

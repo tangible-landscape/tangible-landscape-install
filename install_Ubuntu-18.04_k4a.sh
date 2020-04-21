@@ -88,6 +88,7 @@ sudo wget https://raw.githubusercontent.com/microsoft/Azure-Kinect-Sensor-SDK/de
 
 # GRASS
 # download wxPython4 binary
+sudo apt install -y --no-install-recommends --no-install-suggests libsdl1.2debian
 sudo pip3 install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-18.04 wxPython
 
 # Configure compile and install GRASS GIS

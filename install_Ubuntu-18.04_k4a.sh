@@ -78,7 +78,7 @@ sudo apt-get update && sudo apt-get upgrade -y && \
 
 # K4A
 sudo apt install -y --no-install-recommends --no-install-suggests gpg-agent debconf-utils
-curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
 sudo apt-add-repository https://packages.microsoft.com/ubuntu/18.04/prod
 sudo apt-get update && echo "libk4a${K4A_RELEASE} libk4a${K4A_RELEASE}/accepted-eula-hash string 0f5d5c5de396e4fee4c0753a21fee0c1ed726cf0316204edda484f08cb266d76" | sudo debconf-set-selections && \
         echo "libk4a${K4A_RELEASE} libk4a${K4A_RELEASE}/accept-eula boolean true" | sudo debconf-set-selections && \

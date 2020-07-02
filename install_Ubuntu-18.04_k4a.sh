@@ -4,6 +4,7 @@ set -e
 
 K4A_RELEASE=1.4
 GRASS_RELEASE=7.8.2
+RINKINECT_RELEASE=2.0.0
 PCL_RELEASE=1.10.0
 TANGIBLE_RELEASE=1.0.0
 NUMTHREADS=2
@@ -129,7 +130,7 @@ mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && \
 cd ../..
 
 # r.in.kinect
-git clone --single-branch --branch k4a https://github.com/tangible-landscape/r.in.kinect.git r.in.kinect.k4a
+git clone --single-branch --branch v${RINKINECT_RELEASE} https://github.com/tangible-landscape/r.in.kinect.git r.in.kinect.k4a
 cd r.in.kinect.k4a
 make MODULE_TOPDIR=../grass-${GRASS_RELEASE} && sudo make install MODULE_TOPDIR=../grass-${GRASS_RELEASE}
 cd ..

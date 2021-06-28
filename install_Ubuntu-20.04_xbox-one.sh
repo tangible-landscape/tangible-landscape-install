@@ -10,13 +10,14 @@ RINKINECT_RELEASE=1.0.0
 NCORES=2
 CDIR=`pwd`
 
+sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
 # package dependencies
 sudo apt-get update && sudo apt-get install -y \
    build-essential cmake pkg-config git wget\
    libusb-1.0-0-dev libturbojpeg0-dev libglfw3-dev \
    libboost-all-dev libeigen3-dev libflann-dev libopencv-dev \
    flex make bison gcc libgcc1 g++ ccache \
-   python-dateutil libgsl-dev \
+   python3-dateutil libgsl-dev \
    python3-numpy python3-pil python3-matplotlib python3-watchdog \
    python3-wxgtk4.0 python3-wxgtk-webview4.0 \
    python-is-python3 \
@@ -37,7 +38,7 @@ sudo apt-get update && sudo apt-get install -y \
    ghostscript \
    libproj-dev proj-data proj-bin \
    libgeos-dev \
-   libgdal-dev python-gdal gdal-bin \
+   libgdal-dev python3-gdal gdal-bin \
    libzstd-dev \
    libpdal-dev beignet-dev
    
@@ -95,8 +96,8 @@ make install MODULE_TOPDIR=../grass
 cd ..
 
 # TL plugin
-git clone --branch ${TANGIBLE_RELEASE} https://github.com/tangible-landscape/grass-tangible-landscape
-cd grass-tangible-landscape-${TANGIBLE_RELEASE}
+git clone --branch v${TANGIBLE_RELEASE} https://github.com/tangible-landscape/grass-tangible-landscape
+cd grass-tangible-landscape
 make MODULE_TOPDIR=../grass
 make install MODULE_TOPDIR=../grass
 cd ..

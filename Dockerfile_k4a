@@ -1,10 +1,10 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND noninteractive
 
 SHELL ["/bin/bash", "-c"]
 
-ENV GRASS_RELEASE=7.8.2
+ENV GRASS_RELEASE=8.2.0
 ENV NUMTHREADS=4
 
 WORKDIR /src
@@ -74,7 +74,7 @@ RUN apt-get update && apt-get upgrade -y && \
     libpdal-dev
 
 # download wxPython4 binary
-RUN pip3 install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-18.04 wxPython
+RUN pip3 install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-20.04 wxPython
 
 # Configure compile and install GRASS GIS
 RUN git clone --depth=1 --branch $GRASS_RELEASE https://github.com/OSGeo/grass.git
@@ -90,7 +90,6 @@ RUN /src/grass/configure \
   --with-cairo --with-cairo-ldflags=-lfontconfig \
   --with-freetype --with-freetype-includes="/usr/include/freetype2/" \
   --with-fftw \
-  --with-postgres=yes --with-postgres-includes="/usr/include/postgresql" \
   --with-netcdf \
   --with-zstd \
   --with-bzlib \
@@ -106,7 +105,7 @@ RUN /src/grass/configure \
 
 
 # PCL
-ENV PCL_RELEASE=1.10.0
+ENV PCL_RELEASE=1.11.0
 WORKDIR /src
 RUN git clone --depth=1 --branch pcl-$PCL_RELEASE https://github.com/PointCloudLibrary/pcl.git
 RUN apt-get install -y --no-install-recommends --no-install-suggests libeigen3-dev libflann-dev
@@ -116,18 +115,18 @@ RUN mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && \
     make -j2 install
 
 # K4A
-RUN apt install -y --no-install-recommends --no-install-suggests gpg-agent debconf-utils
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-RUN apt-add-repository https://packages.microsoft.com/ubuntu/18.04/prod
-RUN apt-get update && echo "libk4a1.3	libk4a1.3/accepted-eula-hash	string	0f5d5c5de396e4fee4c0753a21fee0c1ed726cf0316204edda484f08cb266d76" | debconf-set-selections && \
-        echo "libk4a1.3 libk4a1.3/accept-eula boolean	true" | debconf-set-selections && \
-        apt-get install -y libk4a1.3 libk4a1.3-dev k4a-tools
-# wget https://raw.githubusercontent.com/microsoft/Azure-Kinect-Sensor-SDK/develop/scripts/99-k4a.rules -O /etc/udev/rules.d/99-k4a.rules
+
+RUN curl -sSL https://packages.microsoft.com/ubuntu/18.04/prod/pool/main/libk/libk4a1.4/libk4a1.4_1.4.1_amd64.deb > /tmp/libk4a1.4_1.4.1_amd64.deb
+RUN curl -sSL https://packages.microsoft.com/ubuntu/18.04/prod/pool/main/libk/libk4a1.4-dev/libk4a1.4-dev_1.4.1_amd64.deb > /tmp/libk4a1.4-dev_1.4.1_amd64.deb
+RUN echo 'libk4a1.4 libk4a1.4/accepted-eula-hash string 0f5d5c5de396e4fee4c0753a21fee0c1ed726cf0316204edda484f08cb266d76' | debconf-set-selections
+RUN echo 'libk4a1.4 libk4a1.4/accept-eula select true' | debconf-set-selections
+RUN dpkg -i /tmp/libk4a1.4_1.4.1_amd64.deb
+RUN dpkg -i /tmp/libk4a1.4-dev_1.4.1_amd64.deb
 
         
 # r.in.kinect
 WORKDIR /src
-RUN git clone --single-branch --branch pcl-k4a https://github.com/tangible-landscape/r.in.kinect.git
+RUN git clone --single-branch --branch k4a https://github.com/tangible-landscape/r.in.kinect.git
 WORKDIR /src/r.in.kinect
 RUN make MODULE_TOPDIR=../grass && make install MODULE_TOPDIR=../grass
 

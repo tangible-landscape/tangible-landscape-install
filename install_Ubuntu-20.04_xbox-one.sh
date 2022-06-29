@@ -3,10 +3,10 @@
 set -e
 
 LIBFREENECT2_RELEASE=0.2.0
-GRASS_RELEASE=7.8.5
+GRASS_RELEASE=8.2.0
 PCL_RELEASE=1.11.1
-TANGIBLE_RELEASE=1.2.0
-RINKINECT_RELEASE=1.1.0
+TANGIBLE_RELEASE=1.2.1
+RINKINECT_RELEASE=1.2.0
 NCORES=2
 CDIR=`pwd`
 
@@ -108,8 +108,8 @@ cat << EOF > /tmp/grass.desktop
 Version=1.0
 Name=GRASS GIS
 Comment=Start GRASS GIS
-Exec=/usr/local/bin/grass78
-Icon=/usr/local/grass78/share/icons/hicolor/scalable/apps/grass.svg
+Exec=/usr/local/bin/grass
+Icon=/usr/local/grass82/share/icons/hicolor/scalable/apps/grass.svg
 Terminal=true
 Type=Application
 Categories=GIS;Application;

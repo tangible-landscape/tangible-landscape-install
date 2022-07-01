@@ -74,8 +74,7 @@ sudo apt-get update && sudo apt-get upgrade -y && \
     wget \
     zip \
     zlib1g-dev \
-    mesa-common-dev libglu1-mesa-dev \
-    libpdal-dev 
+    mesa-common-dev libglu1-mesa-dev
 
 # K4A
 sudo apt install -y --no-install-recommends --no-install-suggests gpg-agent debconf-utils
@@ -110,7 +109,6 @@ cd grass-${GRASS_RELEASE}
   --with-netcdf \
   --with-zstd \
   --with-bzlib \
-  --with-pdal \
   --without-mysql \
   --without-odbc \
   --with-openmp \

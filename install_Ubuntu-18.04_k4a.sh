@@ -76,6 +76,9 @@ sudo apt-get update && sudo apt-get upgrade -y && \
     zlib1g-dev \
     mesa-common-dev libglu1-mesa-dev
 
+# Python 3.7 for latest GRASS is needed
+sudo add-apt-repository ppa:deadsnakes/ppa -y && apt install -y python3.7
+
 # K4A
 sudo apt install -y --no-install-recommends --no-install-suggests gpg-agent debconf-utils
 curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
@@ -119,7 +122,7 @@ cd grass-${GRASS_RELEASE}
 cd ..
 
 # PCL
-sudo apt-get install -y --no-install-recommends --no-install-suggests libeigen3-dev libflann-dev
+sudo apt-get install -y --no-install-recommends --no-install-suggests libeigen3-dev libflann-dev libboost-all-dev
 git clone --depth=1 --branch pcl-${PCL_RELEASE} https://github.com/PointCloudLibrary/pcl.git pcl-${PCL_RELEASE}
 cd pcl-${PCL_RELEASE}
 mkdir build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && \

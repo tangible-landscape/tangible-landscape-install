@@ -48,8 +48,10 @@ sudo apt-get update && sudo apt-get install -y \
    libgdal-dev python-gdal gdal-bin \
    liblas-bin liblas-dev \
    libzstd-dev
-   
- 
+
+# Python 3.7 for latest GRASS is needed
+sudo add-apt-repository ppa:deadsnakes/ppa -y && apt install -y python3.7
+
 # libfreenect2
 wget https://github.com/OpenKinect/libfreenect2/archive/v${LIBFREENECT2_RELEASE}.tar.gz
 tar xvf v${LIBFREENECT2_RELEASE}.tar.gz

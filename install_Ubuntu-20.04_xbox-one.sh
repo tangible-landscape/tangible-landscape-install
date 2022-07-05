@@ -10,7 +10,7 @@ RINKINECT_RELEASE=1.2.0
 NCORES=2
 CDIR=`pwd`
 
-sudo add-apt-repository ppa:ubuntugis/ubuntugis-unstable
+sudo add-apt-repository -y ppa:ubuntugis/ubuntugis-unstable
 # package dependencies
 sudo apt-get update && sudo apt-get install -y \
    build-essential cmake pkg-config git wget\

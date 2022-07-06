@@ -72,7 +72,9 @@ sudo apt-get update && sudo apt-get install -y \
     zip \
     zlib1g-dev \
     mesa-common-dev libglu1-mesa-dev \
-    libpdal-dev
+    libpdal-dev \
+    libreadline-dev gettext \
+    libeigen3-dev libflann-dev
 
 # k4a
 curl -sSL https://packages.microsoft.com/ubuntu/18.04/prod/pool/main/libk/libk4a1.4/libk4a1.4_1.4.1_amd64.deb > /tmp/libk4a1.4_1.4.1_amd64.deb

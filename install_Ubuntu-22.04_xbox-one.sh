@@ -31,7 +31,7 @@ sudo apt-get update && sudo apt-get install  \
    libfftw3-3 libfftw3-dev \
    libboost-thread-dev libboost-program-options-dev \
    subversion \
-   libavutil-dev \	
+   libavutil-dev \
    libavcodec-dev \
    libavformat-dev libswscale-dev \
    libglu1-mesa-dev libxmu-dev \

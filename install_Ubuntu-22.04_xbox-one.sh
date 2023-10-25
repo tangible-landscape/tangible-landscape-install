@@ -40,7 +40,8 @@ sudo apt-get update && sudo apt-get install  \
    libgeos-dev \
    libgdal-dev python3-gdal gdal-bin \
    libzstd-dev \
-   libpdal-dev
+   libpdal-dev \
+   libsdl2-dev
 
 pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04 wxPython
  

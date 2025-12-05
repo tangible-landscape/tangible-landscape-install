@@ -76,6 +76,7 @@ echo ""
 echo "Installing Orbbec SDK v2..."
 
 # Download and install Orbbec SDK v2 .deb package
+sudo mkdir -p /etc/udev/rules.d
 ORBBEC_DEB="OrbbecSDK_v${ORBBEC_SDK_VERSION}_amd64.deb"
 if [ ! -f "${ORBBEC_DEB}" ]; then
     wget "https://github.com/orbbec/OrbbecSDK_v2/releases/download/v${ORBBEC_SDK_VERSION}/${ORBBEC_DEB}"

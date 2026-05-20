@@ -65,7 +65,8 @@ sudo apt-get update && sudo apt-get install -y software-properties-common && \
    libzstd-dev \
    libpdal-dev \
    libsdl2-dev \
-   libsvm-dev
+   libsvm-dev \
+   liblapacke-dev liblapack-dev
 
 # wxPython
 pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-24.04 wxPython

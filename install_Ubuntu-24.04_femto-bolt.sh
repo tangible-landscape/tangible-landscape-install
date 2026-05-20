@@ -4,7 +4,7 @@
 # Ubuntu 24.04 with Orbbec Femto Bolt (using Orbbec SDK v2)
 #
 # This script installs:
-# - GRASS GIS (compiled from source)
+# - GRASS (compiled from source)
 # - PCL (Point Cloud Library)
 # - Orbbec SDK v2 (for Femto Bolt sensor)
 # - r.in.kinect GRASS  tool (femto-bolt branch)
@@ -17,9 +17,9 @@ export DEBIAN_FRONTEND=noninteractive
 export TZ=UTC
 
 # Configuration - adjust versions as needed
-GRASS_RELEASE=8.4.2
+GRASS_RELEASE=8.5.0
 PCL_RELEASE=1.15.1
-ORBBEC_SDK_VERSION=2.5.5
+ORBBEC_SDK_VERSION=2.8.6
 NCORES=4
 CDIR=$(pwd)
 
@@ -64,7 +64,8 @@ sudo apt-get update && sudo apt-get install -y software-properties-common && \
    libgdal-dev python3-gdal gdal-bin \
    libzstd-dev \
    libpdal-dev \
-   libsdl2-dev
+   libsdl2-dev \
+   libsvm-dev
 
 # wxPython
 pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-24.04 wxPython
@@ -100,40 +101,32 @@ mkdir -p build && cd build
 cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j${NCORES}
 sudo make install
+sudo ldconfig
 cd ../..
 
 # ============================================
-# GRASS GIS
+# GRASS
 # ============================================
 echo ""
-echo "Installing GRASS GIS ${GRASS_RELEASE}..."
+echo "Installing GRASS ${GRASS_RELEASE}..."
 
 if [ ! -d "grass" ]; then
     git clone --branch ${GRASS_RELEASE} --depth 1 https://github.com/OSGeo/grass
 fi
 
 cd grass
-CFLAGS="-O2 -Wall" LDFLAGS="-s" ./configure \
-  --enable-largefile=yes \
-  --with-nls \
-  --with-cxx \
-  --with-readline \
-  --with-pthread \
-  --with-proj-share=/usr/share/proj \
-  --with-geos=/usr/bin/geos-config \
-  --with-cairo \
-  --with-freetype=yes --with-freetype-includes="/usr/include/freetype2/" \
-  --with-sqlite=yes \
-  --with-odbc=no \
-  --with-liblas=no \
-  --with-opengl \
-  --with-pdal
-make -j${NCORES}
-sudo make install
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_INSTALL_PREFIX=/usr/local \
+  -DWITH_PDAL=ON \
+  -DWITH_LIBSVM=ON
+cmake --build build -j${NCORES}
+sudo cmake --install build
 cd ..
 
-# Determine GRASS version directory
+# Determine GRASS version directory (e.g. 8.5.0 -> grass85)
 GRASS_VERSION_SHORT=$(echo ${GRASS_RELEASE} | cut -d. -f1,2 | tr -d '.')
+GISBASE=/usr/local/lib/grass${GRASS_VERSION_SHORT}
 
 # ============================================
 # r.in.kinect (GRASS tool for Orbbec Femto Bolt)
@@ -151,10 +144,9 @@ else
     cd ..
 fi
 
-cd r.in.kinect
-make MODULE_TOPDIR=../grass
-make install MODULE_TOPDIR=../grass
-cd ..
+sudo OrbbecSDK_DIR=/opt/OrbbecSDK_v${ORBBEC_SDK_VERSION}/lib \
+  grass --tmp-project XY --exec \
+  g.extension -s extension=r.in.kinect url=$(pwd)/r.in.kinect
 
 # ============================================
 # Tangible Landscape GRASS Plugin
@@ -172,13 +164,11 @@ else
     cd ..
 fi
 
-cd grass-tangible-landscape
-make MODULE_TOPDIR=../grass
-make install MODULE_TOPDIR=../grass
-cd ..
+sudo grass --tmp-project XY --exec \
+  g.extension -s extension=g.gui.tangible url=$(pwd)/grass-tangible-landscape
 
 # ============================================
-# Desktop Entry for GRASS GIS
+# Desktop Entry for GRASS
 # ============================================
 echo ""
 echo "Creating desktop entry..."
@@ -189,19 +179,12 @@ Version=1.0
 Name=GRASS
 Comment=Start GRASS
 Exec=/usr/local/bin/grass
-Icon=/usr/local/grass${GRASS_VERSION_SHORT}/share/icons/hicolor/scalable/apps/grass.svg
+Icon=${GISBASE}/share/icons/hicolor/scalable/apps/grass.svg
 Terminal=true
 Type=Application
 Categories=GIS;Application;
 EOF
 sudo mv /tmp/grass.desktop /usr/share/applications/grass.desktop
-
-# ============================================
-# Final Configuration
-# ============================================
-echo ""
-echo "Running ldconfig..."
-sudo ldconfig
 
 echo ""
 echo "=============================================="

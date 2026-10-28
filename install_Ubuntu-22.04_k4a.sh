@@ -34,13 +34,18 @@ sudo apt-get update && sudo apt install  \
    libavcodec-dev \
    libavformat-dev libswscale-dev \
    libglu1-mesa-dev libxmu-dev \
-   ghostscript \
+   ghostscript wget \
    libproj-dev proj-data proj-bin \
    libgeos-dev \
    libgdal-dev python3-gdal gdal-bin \
-   libzstd-dev \
+   libzstd-dev checkinstall \
    libpdal-dev \
-   libsdl2-dev
+   libsdl2-dev -y
+
+# Installing more dependencies for NVIZ
+sudo apt-get install \
+  ffmpeg ffmpeg2theora \
+  libffmpegthumbnailer-dev -y
 
 pip install -U -f https://extras.wxpython.org/wxPython4/extras/linux/gtk3/ubuntu-22.04 wxPython
 # k4a
@@ -69,23 +74,36 @@ sudo make -j2 install
 cd ../..
 
 # GRASS GIS
+sudo apt-get install git
 git clone --branch ${GRASS_RELEASE} https://github.com/OSGeo/grass
 cd grass
-CFLAGS="-O2 -Wall" LDFLAGS="-s" ./configure \
-  --enable-largefile=yes \
-  --with-nls \
+# "configure" source code for local machine (checks for CPU type etc):
+MYCFLAGS='-O2 -fPIC -fno-common -fexceptions -std=gnu99 -fstack-protector -m64'
+#MYCXXFLAGS=''
+MYLDFLAGS='-Wl,--no-undefined -Wl,-z,now'
+
+LDFLAGS="$MYLDFLAGS" CFLAGS="$MYCFLAGS" CXXFLAGS="$MYCXXFLAGS" ./configure \
   --with-cxx \
-  --with-readline \
-  --with-pthread \
-  --with-proj-share=/usr/share/proj \
-  --with-geos=/usr/bin/geos-config \
-  --with-cairo \
+  --enable-largefile \
+  --with-proj --with-proj-share=/usr/share/proj \
+  --with-gdal=/usr/bin/gdal-config \
+  --with-python \
+  --with-geos \
+  --with-sqlite \
+  --with-nls \
+  --with-zstd \
+  --with-pdal \
+  --with-cairo --with-cairo-ldflags=-lfontconfig \
   --with-freetype=yes --with-freetype-includes="/usr/include/freetype2/" \
-  --with-sqlite=yes \
-  --with-odbc=no \
-  --with-liblas=no \
-  --with-opengl \
-  --with-pdal
+  --with-wxwidgets \
+  --with-fftw \
+  --with-openmp \
+  --with-opengl-libs=/usr/include/GL \
+  --with-postgres=yes --with-postgres-includes="/usr/include/postgresql" \
+  --without-netcdf \
+  --without-mysql \
+  --without-odbc \
+  --without-ffmpeg
 make -j${NCORES}
 sudo make install
 cd ..

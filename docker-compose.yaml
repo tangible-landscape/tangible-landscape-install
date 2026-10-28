@@ -1,0 +1,70 @@
+x-tangible-base: &tangible-base
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu, video, graphics, utility]
+      limits:
+        memory: 16G
+  environment:
+    GRASS_RELEASE: "${GRASS_RELEASE:-8.5.0}"
+    PCL_RELEASE: "${PCL_RELEASE:-1.15.1}"
+    NCORES: "${NCORES:-4}"
+    DISPLAY: "${DISPLAY:-}"
+    XR_RUNTIME_JSON: "etc/openxr/1/active_runtime.json"
+  devices:
+    - "/dev/bus/usb:/dev/bus/usb"
+  device_cgroup_rules:
+    - "c 189:* rmw"
+  privileged: true
+  volumes:
+    - "/tmp/.X11-unix:/tmp/.X11-unix:rw"
+    - "/dev:/dev"
+    - "/run/user/1000/pipewire-0:/run/user/1000/pipewire-0"
+  ipc: host
+  working_dir: /workspace
+  stdin_open: true
+  tty: true
+  command: ["/bin/bash"]
+
+services:
+  femto:
+    <<: *tangible-base
+    image: tangible-landscape:femto
+    build:
+      context: .
+      dockerfile: Dockerfile.femto
+      args:
+        BLENDER_VERSION: "${BLENDER_VERSION:-5.2.1}"
+        GRASS_RELEASE: "${GRASS_RELEASE:-8.5.0}"
+        PCL_RELEASE: "${PCL_RELEASE:-1.15.1}"
+        ORBBEC_SDK_VERSION: "${ORBBEC_SDK_VERSION:-2.8.6}"
+        NCORES: "${NCORES:-4}"
+    environment:
+      ORBBEC_SDK_VERSION: "${ORBBEC_SDK_VERSION:-2.8.6}"
+
+  k4a:
+    <<: *tangible-base
+    image: tangible-landscape:k4a
+    build:
+      context: .
+      dockerfile: Dockerfile.k4a
+      args:
+        BLENDER_VERSION: "${BLENDER_VERSION:-5.2.1}"
+        GRASS_RELEASE: "${GRASS_RELEASE:-8.5.0}"
+        PCL_RELEASE: "${PCL_RELEASE:-1.15.1}"
+        NCORES: "${NCORES:-4}"
+
+  xbox-one:
+    <<: *tangible-base
+    image: tangible-landscape:xbox-one
+    build:
+      context: .
+      dockerfile: Dockerfile.xbox-one
+      args:
+        BLENDER_VERSION: "${BLENDER_VERSION:-5.2.1}"
+        GRASS_RELEASE: "${GRASS_RELEASE:-8.5.0}"
+        PCL_RELEASE: "${PCL_RELEASE:-1.15.1}"
+        NCORES: "${NCORES:-4}"
